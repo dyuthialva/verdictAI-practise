@@ -97,7 +97,7 @@ export default function HistoryView({ runs, onSelectRun, onBackToDebugger }: Pro
                 <div className="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 border-white/10 pt-2 sm:pt-0">
                   <div className="text-right">
                     <div className="text-[11px] text-slate-400 font-mono">Winner</div>
-                    <div className="text-xs font-bold text-emerald-400">{winner}</div>
+                    <div className="text-xs font-bold text-rose-300">{winner}</div>
                   </div>
 
                   <div className="text-right">

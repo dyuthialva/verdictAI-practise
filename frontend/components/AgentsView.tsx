@@ -13,11 +13,11 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Bug Investigator",
       badge: "Agent 1",
       icon: "/images/prosecutor-transparent.png",
-      colorBorder: "border-orange-500/30 hover:border-orange-500/70 focus:border-orange-500/70",
-      colorShadow: "hover:shadow-[0_12px_32px_rgba(234,88,12,0.25)] focus:shadow-[0_12px_32px_rgba(234,88,12,0.25)]",
-      colorBg: "bg-orange-950/20",
-      colorAccent: "text-orange-400",
-      colorPill: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+      colorBorder: "border-rose-500/40 hover:border-rose-500/70 focus:border-rose-500/70",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(244,63,94,0.22)] focus:shadow-[0_12px_32px_rgba(244,63,94,0.22)]",
+      colorBg: "bg-rose-950/30",
+      colorAccent: "text-rose-400",
+      colorPill: "bg-rose-500/10 text-rose-300 border-rose-500/30",
       summary: "Identifies the likely bug and proposes a fix.",
       description:
         "Acts as the aggressive detective. It parses your program to pinpoint exactly where and why it crashes or produces incorrect results, providing an initial candidate code repair.",
@@ -28,11 +28,11 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Counter-Analyst",
       badge: "Agent 2",
       icon: "/images/defender-transparent.png",
-      colorBorder: "border-sky-500/30 hover:border-sky-500/70 focus:border-sky-500/70",
-      colorShadow: "hover:shadow-[0_12px_32px_rgba(2,132,199,0.25)] focus:shadow-[0_12px_32px_rgba(2,132,199,0.25)]",
-      colorBg: "bg-sky-950/20",
-      colorAccent: "text-sky-400",
-      colorPill: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+      colorBorder: "border-rose-700/50 hover:border-rose-600/70 focus:border-rose-600/70",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(190,18,60,0.22)] focus:shadow-[0_12px_32px_rgba(190,18,60,0.22)]",
+      colorBg: "bg-rose-950/40",
+      colorAccent: "text-rose-300",
+      colorPill: "bg-rose-900/30 text-rose-200 border-rose-700/40",
       summary: "Challenges the first diagnosis and proposes an alternative.",
       description:
         "Acts as the skeptical safeguard. It scrutinizes the Prosecutor's reasoning, exposes unhandled edge cases (such as nulls, empty payloads, or extreme inputs), and drafts a superior alternative solution.",
@@ -43,11 +43,11 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Impartial Arbiter",
       badge: "Agent 3",
       icon: "/images/judge-transparent.png",
-      colorBorder: "border-emerald-500/30 hover:border-emerald-500/70 focus:border-emerald-500/70",
-      colorShadow: "hover:shadow-[0_12px_32px_rgba(16,185,129,0.25)] focus:shadow-[0_12px_32px_rgba(16,185,129,0.25)]",
-      colorBg: "bg-emerald-950/20",
-      colorAccent: "text-emerald-400",
-      colorPill: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      colorBorder: "border-rose-900/60 hover:border-rose-700/80 focus:border-rose-700/80",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(136,19,55,0.25)] focus:shadow-[0_12px_32px_rgba(136,19,55,0.25)]",
+      colorBg: "bg-rose-950/20",
+      colorAccent: "text-rose-200",
+      colorPill: "bg-rose-950/40 text-rose-300 border-rose-800/40",
       summary: "Runs the original and candidate programs against the same tests, then bases the verdict on observed results.",
       description:
         "Acts as the evidence-driven court. It executes every candidate solution inside an isolated test sandbox, measures exact pass/fail counts against your test suite, and renders an indisputable verdict.",
@@ -71,7 +71,7 @@ export default function AgentsView({ onBackToDebugger }: Props) {
         <button
           type="button"
           onClick={onBackToDebugger}
-          className="btn-secondary btn-shine flex items-center space-x-2 px-4 h-[40px] text-sm font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="btn-secondary btn-shine flex items-center space-x-2 px-4 h-[40px] text-sm font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
         >
           <span>← Back to Debugger</span>
         </button>
@@ -86,7 +86,7 @@ export default function AgentsView({ onBackToDebugger }: Props) {
             tabIndex={0}
             role="region"
             aria-label={`${agent.name} Agent Card`}
-            className={`flex flex-col justify-between rounded-xl border bg-black/80 p-6 shadow-sm transform transition-transform duration-200 ease-out will-change-transform hover:scale-[1.02] focus:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${agent.colorBorder} ${agent.colorShadow}`}
+            className={`flex flex-col justify-between rounded-xl border bg-black/80 p-6 shadow-sm transform transition-transform duration-200 ease-out will-change-transform hover:scale-[1.02] focus:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 ${agent.colorBorder} ${agent.colorShadow}`}
           >
             <div className="space-y-5">
               {/* Agent Icon & Header */}

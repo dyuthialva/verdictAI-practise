@@ -264,7 +264,41 @@ pre, code {
   animation-name: in-btn;
 }
 
-/* Stagger delays */
+/* Stagger delays (Item 17) */
+/* Entry screen order: 0.15s apart (logo, wordmark, tagline, hint) */
+.entry-step-0 {
+  animation-delay: 0s;
+}
+.entry-step-1 {
+  animation-delay: 0.15s;
+}
+.entry-step-2 {
+  animation-delay: 0.30s;
+}
+.entry-step-3 {
+  animation-delay: 0.45s;
+}
+
+/* Dashboard order: sidebar items (0.08s apart), code box, test box, Run button */
+.stagger-1 {
+  animation-delay: 0.08s;
+}
+.stagger-2 {
+  animation-delay: 0.16s;
+}
+.stagger-3 {
+  animation-delay: 0.24s;
+}
+.stagger-4 {
+  animation-delay: 0.32s;
+}
+.stagger-5 {
+  animation-delay: 0.40s;
+}
+.stagger-6 {
+  animation-delay: 0.48s;
+}
+
 .delay-0 {
   animation-delay: 0s;
 }

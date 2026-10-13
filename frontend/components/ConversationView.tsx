@@ -39,10 +39,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
         <div className="flex items-center space-x-2">
           {isMockMode && (
             <span
-              className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-400"
+              className="inline-flex items-center rounded-full border border-rose-900/40 bg-rose-950/20 px-2.5 py-1 text-xs font-medium text-rose-300"
               title="Agent responses generated via deterministic mock heuristics. Test execution is real."
             >
-              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
               Mock Agent Mode
             </span>
           )}
@@ -50,7 +50,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
           <button
             type="button"
             onClick={onEditAndRerun}
-            className="btn-secondary btn-shine px-3.5 h-[36px] flex items-center justify-center text-xs font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            className="btn-secondary btn-shine px-3.5 h-[36px] flex items-center justify-center text-xs font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
           >
             Edit & Re-run
           </button>
@@ -61,9 +61,9 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
       {isMockMode && (
         <div
           role="note"
-          className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 text-xs text-amber-300/90 leading-relaxed"
+          className="rounded-lg border border-rose-900/30 bg-rose-950/20 p-3 text-xs text-rose-200/90 leading-relaxed"
         >
-          <span className="font-semibold text-amber-300">Notice:</span> Agent responses
+          <span className="font-semibold text-rose-300">Notice:</span> Agent responses
           (Prosecutor, Defender, and Judge reasoning) are running in <strong>mock mode</strong>.
           Test case execution against the code was evaluated against actual test inputs.
         </div>
@@ -132,8 +132,8 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* If Milestone 1 validated response only */}
       {status === "validated" && !prosecutor && (
-        <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 p-5 text-sm text-sky-200 space-y-2">
-          <div className="font-semibold text-sky-400">Request Validated by Backend</div>
+        <div className="rounded-xl border border-rose-900/40 bg-rose-950/20 p-5 text-sm text-rose-200 space-y-2">
+          <div className="font-semibold text-rose-400">Request Validated by Backend</div>
           <p className="text-slate-300">{message}</p>
           <div className="text-xs font-mono text-slate-400 pt-2">
             Mode: {agent_mode} | Lines: {response.code_line_count} | Tests: {response.test_case_count}
@@ -143,10 +143,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 2. PROSECUTOR AGENT CARD */}
       {prosecutor && (
-        <div className="rounded-xl border border-orange-500/30 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-orange-500/60 hover:shadow-[0_8px_24px_rgba(234,88,12,0.15)]">
-          <div className="flex items-center justify-between border-b border-orange-500/20 bg-orange-950/20 px-4 py-3">
+        <div className="rounded-xl border border-rose-500/30 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-rose-500/60 hover:shadow-[0_8px_24px_rgba(244,63,94,0.18)]">
+          <div className="flex items-center justify-between border-b border-rose-500/20 bg-rose-950/20 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-orange-900/40 p-1 border border-orange-500/30 flex items-center justify-center">
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-rose-900/40 p-1 border border-rose-500/30 flex items-center justify-center">
                 <PixelReveal
                   src="/images/prosecutor-transparent.png"
                   alt="Prosecutor Icon"
@@ -158,8 +158,8 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-bold text-orange-400">Prosecutor</span>
-                  <span className="rounded bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-mono font-medium text-orange-300">
+                  <span className="text-sm font-bold text-rose-400">Prosecutor</span>
+                  <span className="rounded bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-mono font-medium text-rose-300">
                     Agent 1
                   </span>
                 </div>
@@ -170,7 +170,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
           <div className="p-4 md:p-5 space-y-4">
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-orange-400/90 mb-1">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-400/90 mb-1">
                 Root Cause
               </h4>
               <p className="text-sm text-slate-200 leading-relaxed font-medium">
@@ -189,18 +189,18 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-orange-400/90">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-400/90">
                   Proposed Fix
                 </h4>
                 <button
                   type="button"
                   onClick={() => copyCode(prosecutor.proposed_code, "pros")}
-                  className="rounded border border-borderSubtle bg-panelElevated px-2 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-slate-700 hover:text-white active:bg-slate-900 active:scale-[0.98] focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
+                  className="rounded border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-white/10 hover:text-white active:bg-white/5 focus:outline-none focus-visible:ring-1 focus-visible:ring-rose-400"
                 >
                   {copiedSection === "pros" ? "Copied!" : "Copy code"}
                 </button>
               </div>
-              <pre className="overflow-x-auto rounded-lg border border-borderSubtle bg-background p-3 text-xs md:text-sm font-mono text-emerald-300">
+              <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black p-3 text-xs md:text-sm font-mono text-rose-200">
                 <code>{prosecutor.proposed_code}</code>
               </pre>
             </div>
@@ -210,10 +210,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 3. DEFENDER AGENT CARD */}
       {defender && (
-        <div className="rounded-xl border border-sky-500/30 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-sky-500/60 hover:shadow-[0_8px_24px_rgba(2,132,199,0.15)]">
-          <div className="flex items-center justify-between border-b border-sky-500/20 bg-sky-950/20 px-4 py-3">
+        <div className="rounded-xl border border-rose-700/40 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-rose-600/60 hover:shadow-[0_8px_24px_rgba(190,18,60,0.18)]">
+          <div className="flex items-center justify-between border-b border-rose-700/20 bg-rose-950/30 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-sky-900/40 p-1 border border-sky-500/30 flex items-center justify-center">
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-rose-950/60 p-1 border border-rose-700/40 flex items-center justify-center">
                 <PixelReveal
                   src="/images/defender-transparent.png"
                   alt="Defender Icon"
@@ -225,8 +225,8 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-bold text-sky-400">Defender</span>
-                  <span className="rounded bg-sky-500/20 px-1.5 py-0.5 text-[10px] font-mono font-medium text-sky-300">
+                  <span className="text-sm font-bold text-rose-300">Defender</span>
+                  <span className="rounded bg-rose-900/30 px-1.5 py-0.5 text-[10px] font-mono font-medium text-rose-200">
                     Agent 2
                   </span>
                 </div>
@@ -237,7 +237,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
           <div className="p-4 md:p-5 space-y-4">
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-sky-400/90 mb-1">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-300/90 mb-1">
                 Criticism of Prosecutor
               </h4>
               <p className="text-sm text-slate-200 leading-relaxed font-medium">
@@ -265,18 +265,18 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-sky-400/90">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-300/90">
                   Alternative Proposed Code
                 </h4>
                 <button
                   type="button"
                   onClick={() => copyCode(defender.proposed_code, "def")}
-                  className="rounded border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-white/10 hover:text-white active:bg-white/5 focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
+                  className="rounded border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-white/10 hover:text-white active:bg-white/5 focus:outline-none focus-visible:ring-1 focus-visible:ring-rose-400"
                 >
                   {copiedSection === "def" ? "Copied!" : "Copy code"}
                 </button>
               </div>
-              <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black p-3 text-xs md:text-sm font-mono text-sky-300">
+              <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black p-3 text-xs md:text-sm font-mono text-rose-100">
                 <code>{defender.proposed_code}</code>
               </pre>
             </div>
@@ -286,10 +286,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 4. JUDGE AGENT CARD */}
       {judge && (
-        <div className="rounded-xl border border-emerald-500/40 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-emerald-500/70 hover:shadow-[0_8px_24px_rgba(16,185,129,0.15)]">
-          <div className="flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3">
+        <div className="rounded-xl border border-rose-900/50 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-rose-700/70 hover:shadow-[0_8px_24px_rgba(136,19,55,0.2)]">
+          <div className="flex items-center justify-between border-b border-rose-900/30 bg-rose-950/20 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-emerald-900/40 p-1 border border-emerald-500/30 flex items-center justify-center">
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-rose-950/40 p-1 border border-rose-800/40 flex items-center justify-center">
                 <PixelReveal
                   src="/images/judge-transparent.png"
                   alt="Judge Icon"
@@ -301,8 +301,8 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-bold text-emerald-400">Judge</span>
-                  <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
+                  <span className="text-sm font-bold text-rose-200">Judge</span>
+                  <span className="rounded bg-rose-950/40 px-1.5 py-0.5 text-[10px] font-mono font-medium text-rose-300">
                     Agent 3
                   </span>
                 </div>
@@ -312,7 +312,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
             <div className="flex items-center space-x-2">
               <span className="text-xs text-slate-400">Winner:</span>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-0.5 text-xs font-bold text-emerald-300">
+              <span className="rounded-full bg-rose-900/30 border border-rose-600/40 px-3 py-0.5 text-xs font-bold text-rose-200">
                 {judge.winner}
               </span>
             </div>
@@ -320,7 +320,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
           <div className="p-4 md:p-5 space-y-4">
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400/90 mb-1">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-rose-300/90 mb-1">
                 Final Verdict
               </h4>
               <p className="text-sm md:text-base text-slate-100 font-semibold leading-relaxed">
@@ -342,7 +342,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 5. RESULTS COMPARISON MATRIX */}
       {results && (
-        <section className="rounded-xl border border-borderSubtle bg-panel overflow-hidden shadow-sm space-y-4 p-4 md:p-5">
+        <section className="rounded-xl border border-white/10 bg-black/80 overflow-hidden shadow-sm space-y-4 p-4 md:p-5">
           <div>
             <h3 className="text-base font-bold text-slate-100">
               Results Comparison Matrix
@@ -355,7 +355,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
           {/* Three comparison scorecards */}
           <div className="grid gap-3 sm:grid-cols-3">
             {/* Original */}
-            <div className="rounded-lg border border-borderSubtle bg-background p-3.5 space-y-1.5">
+            <div className="rounded-lg border border-white/10 bg-black p-3.5 space-y-1.5">
               <div className="text-xs text-slate-400 font-medium">Original Code</div>
               <div className="flex items-baseline space-x-2">
                 <span className="text-2xl font-bold font-mono text-slate-200">
@@ -373,10 +373,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
             </div>
 
             {/* Prosecutor */}
-            <div className="rounded-lg border border-orange-500/20 bg-orange-950/10 p-3.5 space-y-1.5">
-              <div className="text-xs text-orange-400/90 font-medium">Prosecutor&apos;s Fix</div>
+            <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-3.5 space-y-1.5">
+              <div className="text-xs text-rose-300 font-medium">Prosecutor&apos;s Fix</div>
               <div className="flex items-baseline space-x-2">
-                <span className="text-2xl font-bold font-mono text-orange-300">
+                <span className="text-2xl font-bold font-mono text-rose-200">
                   {results.prosecutor.passed_count}/{results.prosecutor.total_count}
                 </span>
                 <span className="text-xs text-slate-500">passed</span>
@@ -391,10 +391,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
             </div>
 
             {/* Defender */}
-            <div className="rounded-lg border border-sky-500/20 bg-sky-950/10 p-3.5 space-y-1.5">
-              <div className="text-xs text-sky-400/90 font-medium">Defender&apos;s Fix</div>
+            <div className="rounded-lg border border-rose-700/30 bg-rose-950/30 p-3.5 space-y-1.5">
+              <div className="text-xs text-rose-300 font-medium">Defender&apos;s Fix</div>
               <div className="flex items-baseline space-x-2">
-                <span className="text-2xl font-bold font-mono text-sky-300">
+                <span className="text-2xl font-bold font-mono text-rose-100">
                   {results.defender.passed_count}/{results.defender.total_count}
                 </span>
                 <span className="text-xs text-slate-500">passed</span>

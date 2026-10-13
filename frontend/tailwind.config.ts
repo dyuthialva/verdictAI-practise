@@ -16,19 +16,19 @@ const config: Config = {
         borderSubtle: "#1c2230",
         borderActive: "#2e384d",
         agentPros: {
-          border: "#ea580c",
-          bg: "#1c1410",
-          text: "#fb923c",
+          border: "#f43f5e",
+          bg: "#2b0a14",
+          text: "#fda4af",
         },
         agentDef: {
-          border: "#0284c7",
-          bg: "#0c1826",
-          text: "#38bdf8",
+          border: "#be123c",
+          bg: "#20060e",
+          text: "#fecdd3",
         },
         agentJudge: {
-          border: "#10b981",
-          bg: "#0b1d19",
-          text: "#34d399",
+          border: "#881337",
+          bg: "#19050b",
+          text: "#ffe4e6",
         },
       },
       fontFamily: {

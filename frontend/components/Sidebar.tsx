@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
 export type NavTab = "dashboard" | "agents" | "history";
@@ -28,6 +29,69 @@ export default function Sidebar({
   onToggleMobile,
   logoRef,
 }: Props) {
+  // Section 4: Profile state for current browser session only (no backend/localStorage)
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  const signInTriggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus trap and keyboard controls for Sign in dialog
+  useEffect(() => {
+    if (!isSignInOpen) return;
+    nameInputRef.current?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsSignInOpen(false);
+        signInTriggerRef.current?.focus();
+      } else if (e.key === "Tab" && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSignInOpen]);
+
+  function handleSignInSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = nameInput.trim();
+    if (!trimmed) {
+      setNameError("Please enter a display name to continue.");
+      return;
+    }
+    setUserName(trimmed);
+    setNameInput("");
+    setNameError(null);
+    setIsSignInOpen(false);
+  }
+
+  function handleSignOut() {
+    setUserName(null);
+    signInTriggerRef.current?.focus();
+  }
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -59,7 +123,7 @@ export default function Sidebar({
             onKeyDown={(e) => {
               if (e.key === "Enter") onSelectTab("dashboard");
             }}
-            className="flex items-center space-x-3 cursor-pointer py-1 px-2 rounded-lg hover:bg-white/5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            className="flex items-center space-x-3 cursor-pointer py-1 px-2 rounded-lg hover:bg-white/5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
             title="VerdictAI Home"
           >
             {/* Target logo icon anchor for transition glide */}
@@ -87,10 +151,10 @@ export default function Sidebar({
           <button
             type="button"
             onClick={onNewChat}
-            className="btn-secondary btn-shine flex items-center justify-center space-x-2 w-full text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+            className="btn-secondary btn-shine flex items-center justify-center space-x-2 w-full text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
           >
             <svg
-              className="w-4 h-4 text-sky-400"
+              className="w-4 h-4 text-rose-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -109,12 +173,12 @@ export default function Sidebar({
                 onSelectTab("dashboard");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`appear appear-soft stagger-1 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+              className={`appear appear-soft stagger-1 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 ${
                 activeTab === "dashboard" ? "sidebar-item-active" : ""
               }`}
             >
               <svg
-                className={`w-4 h-4 ${activeTab === "dashboard" ? "text-sky-300" : "text-slate-400"}`}
+                className={`w-4 h-4 ${activeTab === "dashboard" ? "text-rose-300" : "text-slate-400"}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -136,12 +200,12 @@ export default function Sidebar({
                 onSelectTab("agents");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`appear appear-soft stagger-2 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+              className={`appear appear-soft stagger-2 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 ${
                 activeTab === "agents" ? "sidebar-item-active" : ""
               }`}
             >
               <svg
-                className={`w-4 h-4 ${activeTab === "agents" ? "text-sky-300" : "text-slate-400"}`}
+                className={`w-4 h-4 ${activeTab === "agents" ? "text-rose-300" : "text-slate-400"}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -163,13 +227,13 @@ export default function Sidebar({
                 onSelectTab("history");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`appear appear-soft stagger-3 sidebar-item flex items-center justify-between w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+              className={`appear appear-soft stagger-3 sidebar-item flex items-center justify-between w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 ${
                 activeTab === "history" ? "sidebar-item-active" : ""
               }`}
             >
               <div className="flex items-center space-x-3">
                 <svg
-                  className={`w-4 h-4 ${activeTab === "history" ? "text-sky-300" : "text-slate-400"}`}
+                  className={`w-4 h-4 ${activeTab === "history" ? "text-rose-300" : "text-slate-400"}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -192,51 +256,195 @@ export default function Sidebar({
           </nav>
         </div>
 
-        {/* Backend System Status Card (A2 Rebuilt) */}
-        <div className="appear appear-soft stagger-4 mx-3 mb-4 p-3.5 rounded-lg border border-white/10 bg-black/80 shadow-sm text-xs space-y-2">
-          {/* Row 1: Backend */}
-          <div className="flex items-center justify-between min-w-0 gap-2">
-            <span className="text-slate-400 font-medium truncate flex-shrink-0">Backend</span>
-            <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
-              <span
-                className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                  backendStatus === "online"
-                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
-                    : backendStatus === "checking"
-                    ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)] animate-pulse"
-                    : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
-                }`}
-              />
-              <span
-                className={`font-mono text-xs truncate ${
-                  backendStatus === "online"
-                    ? "text-emerald-300 font-semibold"
-                    : backendStatus === "checking"
-                    ? "text-amber-300"
-                    : "text-rose-400 font-semibold"
-                }`}
+        {/* Sidebar Bottom Controls: Profile (Section 4) + Backend Status (A2) */}
+        <div className="flex flex-col">
+          {/* Section 4: Profile / Sign in Control */}
+          <div className="mx-3 mb-2 p-2.5 rounded-lg border border-white/10 bg-black/60 shadow-sm flex items-center justify-between gap-2 min-w-0">
+            {userName ? (
+              <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+                <div
+                  className="w-7 h-7 rounded-full bg-rose-950/60 border border-rose-500/40 text-rose-200 font-mono text-xs font-semibold flex items-center justify-center flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  {userName.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-xs font-medium text-slate-200 truncate min-w-0" title={userName}>
+                  {userName}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 min-w-0 flex-1">
+                <div
+                  className="w-7 h-7 rounded-full bg-white/5 border border-white/15 text-slate-400 flex items-center justify-center flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium text-slate-400 truncate">Guest</span>
+              </div>
+            )}
+
+            {userName ? (
+              <button
+                type="button"
+                onClick={handleSignOut}
+                aria-label="Sign out of profile"
+                className="rounded border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-medium text-slate-400 transition-colors duration-150 hover:bg-white/10 hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 flex-shrink-0"
               >
-                {backendStatus === "online" ? "Online" : backendStatus === "checking" ? "Checking..." : "Offline"}
+                Sign out
+              </button>
+            ) : (
+              <button
+                ref={signInTriggerRef}
+                type="button"
+                onClick={() => {
+                  setNameError(null);
+                  setIsSignInOpen(true);
+                }}
+                aria-label="Sign in"
+                className="btn-secondary btn-shine px-2.5 h-[28px] text-[11px] font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 flex-shrink-0"
+              >
+                Sign in
+              </button>
+            )}
+          </div>
+
+          {/* Backend System Status Card (A2 Rebuilt) */}
+          <div className="appear appear-soft stagger-4 mx-3 mb-4 p-3.5 rounded-lg border border-white/10 bg-black/80 shadow-sm text-xs space-y-2">
+            {/* Row 1: Backend */}
+            <div className="flex items-center justify-between min-w-0 gap-2">
+              <span className="text-slate-400 font-medium truncate flex-shrink-0">Backend</span>
+              <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
+                <span
+                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    backendStatus === "online"
+                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
+                      : backendStatus === "checking"
+                      ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)] animate-pulse"
+                      : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
+                  }`}
+                />
+                <span
+                  className={`font-mono text-xs truncate ${
+                    backendStatus === "online"
+                      ? "text-emerald-300 font-semibold"
+                      : backendStatus === "checking"
+                      ? "text-amber-300"
+                      : "text-rose-400 font-semibold"
+                  }`}
+                >
+                  {backendStatus === "online" ? "Online" : backendStatus === "checking" ? "Checking..." : "Offline"}
+                </span>
+              </div>
+            </div>
+
+            {/* Row 2: Agent mode */}
+            <div className="flex items-center justify-between min-w-0 gap-2">
+              <span className="text-slate-400 font-medium truncate flex-shrink-0">Agent mode</span>
+              <span className="text-slate-200 font-mono capitalize truncate min-w-0 text-right">
+                {backendStatus === "offline" ? "Unknown" : agentMode || "mock"}
               </span>
             </div>
-          </div>
 
-          {/* Row 2: Agent mode */}
-          <div className="flex items-center justify-between min-w-0 gap-2">
-            <span className="text-slate-400 font-medium truncate flex-shrink-0">Agent mode</span>
-            <span className="text-slate-200 font-mono capitalize truncate min-w-0 text-right">
-              {backendStatus === "offline" ? "Unknown" : agentMode || "mock"}
-            </span>
+            {/* Offline hint */}
+            {backendStatus === "offline" && (
+              <p className="pt-2 border-t border-white/10 text-[11px] text-slate-400/90 leading-tight">
+                Start the backend on port 8000.
+              </p>
+            )}
           </div>
-
-          {/* Offline hint */}
-          {backendStatus === "offline" && (
-            <p className="pt-2 border-t border-white/10 text-[11px] text-slate-400/90 leading-tight">
-              Start the backend on port 8000.
-            </p>
-          )}
         </div>
       </aside>
+
+      {/* Profile Sign-in Dialog Modal */}
+      {isSignInOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profile-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        >
+          <div
+            ref={dialogRef}
+            className="w-full max-w-sm rounded-xl border border-white/15 bg-black p-5 shadow-2xl space-y-4"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 id="profile-dialog-title" className="text-sm font-semibold text-slate-100">
+                Sign in
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignInOpen(false);
+                  signInTriggerRef.current?.focus();
+                }}
+                aria-label="Close dialog"
+                className="text-slate-400 hover:text-white p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSignInSubmit} className="space-y-3.5">
+              <div>
+                <label
+                  htmlFor="profile-display-name"
+                  className="block text-xs font-medium text-slate-300 mb-1.5"
+                >
+                  Display name
+                </label>
+                <input
+                  ref={nameInputRef}
+                  id="profile-display-name"
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => {
+                    setNameInput(e.target.value);
+                    if (nameError) setNameError(null);
+                  }}
+                  placeholder="e.g. Alex Turing"
+                  className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400"
+                />
+                {nameError && (
+                  <p role="alert" className="mt-1.5 text-[11px] text-rose-400">
+                    {nameError}
+                  </p>
+                )}
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-relaxed border-t border-white/5 pt-2">
+                Demo profile for this session only. Nothing is saved.
+              </p>
+
+              <div className="flex items-center justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignInOpen(false);
+                    signInTriggerRef.current?.focus();
+                  }}
+                  className="btn-secondary px-3.5 h-[34px] text-xs font-medium text-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary btn-shine px-4 h-[34px] text-xs font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+                >
+                  Continue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
