@@ -1,4 +1,4 @@
-# Swarm Debugger
+# VERDICT AI- Swarm Debugger
 
 Adversarial multi-agent debugging backed by real test execution.
 
