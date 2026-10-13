@@ -7,16 +7,24 @@ export function getApiUrl(): string {
   return API_URL;
 }
 
-/** Check backend health */
-export async function checkBackendHealth(): Promise<{ ok: boolean; agentMode?: string; error?: string }> {
+/** Check backend health with a short timeout */
+export async function checkBackendHealth(timeoutMs = 3000): Promise<{ ok: boolean; agentMode?: string; error?: string }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
   try {
-    const res = await fetch(`${API_URL}/health`, { method: "GET" });
+    const res = await fetch(`${API_URL}/health`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
     if (!res.ok) {
       return { ok: false, error: `HTTP ${res.status}` };
     }
     const data = await res.json();
     return { ok: true, agentMode: data.agent_mode };
   } catch (err) {
+    clearTimeout(timer);
     return { ok: false, error: (err as Error).message };
   }
 }

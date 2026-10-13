@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import EntryScreen from "@/components/EntryScreen";
-import Sidebar, { NavTab } from "@/components/Sidebar";
+import Sidebar, { NavTab, BackendStatus } from "@/components/Sidebar";
 import CodeInput from "@/components/CodeInput";
 import TestCaseInput from "@/components/TestCaseInput";
 import ConversationView from "@/components/ConversationView";
@@ -32,24 +32,63 @@ export default function Home() {
   } | null>(null);
   const [sessionRuns, setSessionRuns] = useState<SessionRun[]>([]);
 
-  // Backend health state
-  const [backendOnline, setBackendOnline] = useState(false);
-  const [agentMode, setAgentMode] = useState("mock");
+  // Backend health state with 3 real states (A2)
+  const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking");
+  const [agentMode, setAgentMode] = useState("Unknown");
 
-  // Health check on mount and interval
+  // Ref to target sidebar logo for shared-element glide animation
+  const sidebarLogoRef = useRef<HTMLDivElement>(null);
+
+  // Health check on mount and every 10 seconds with short timeout (A2)
   const verifyBackend = useCallback(async () => {
-    const health = await checkBackendHealth();
-    setBackendOnline(health.ok);
-    if (health.agentMode) {
-      setAgentMode(health.agentMode);
+    const health = await checkBackendHealth(2500);
+    if (health.ok) {
+      setBackendStatus("online");
+      setAgentMode(health.agentMode || "mock");
+    } else {
+      setBackendStatus("offline");
+      setAgentMode("Unknown");
     }
   }, []);
 
   useEffect(() => {
     verifyBackend();
-    const timer = setInterval(verifyBackend, 15000);
+    const timer = setInterval(verifyBackend, 10000);
     return () => clearInterval(timer);
   }, [verifyBackend]);
+
+  // Motion C1: Animationend listener & JS fallback for .appear elements
+  useEffect(() => {
+    const handleAnimationEnd = (e: AnimationEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.classList?.contains("appear")) {
+        target.classList.add("is-in");
+      }
+    };
+    window.addEventListener("animationend", handleAnimationEnd);
+
+    // JS fallback: after two requestAnimationFrame calls, if getAnimations() shows nothing running, add "is-in"
+    let f1: number;
+    let f2: number;
+    f1 = requestAnimationFrame(() => {
+      f2 = requestAnimationFrame(() => {
+        const elements = document.querySelectorAll(".appear");
+        elements.forEach((el) => {
+          const anims = el.getAnimations ? el.getAnimations() : [];
+          const isRunning = anims.some((a) => a.playState === "running");
+          if (!isRunning) {
+            el.classList.add("is-in");
+          }
+        });
+      });
+    });
+
+    return () => {
+      window.removeEventListener("animationend", handleAnimationEnd);
+      cancelAnimationFrame(f1);
+      cancelAnimationFrame(f2);
+    };
+  }, [showEntry, activeTab]);
 
   // Execute debug run
   async function handleRun() {
@@ -112,206 +151,226 @@ export default function Home() {
 
   return (
     <>
-      {/* 1. Minimal Entry Screen */}
-      {showEntry && <EntryScreen onEnter={() => setShowEntry(false)} />}
+      {/* 1. Minimal Entry Screen with shared-element logo glide target */}
+      {showEntry && (
+        <EntryScreen
+          onEnter={() => setShowEntry(false)}
+          targetRef={sidebarLogoRef}
+        />
+      )}
+
+      {/* Film grain overlay (B1) */}
+      <div className="film-grain" aria-hidden="true" />
 
       {/* 2. Main Dashboard Application Layout */}
-      <div className="flex min-h-screen bg-background bg-tech-grid">
-        {/* Left Sidebar */}
-        <Sidebar
-          activeTab={activeTab}
-          onSelectTab={setActiveTab}
-          onNewChat={handleNewChat}
-          historyCount={sessionRuns.length}
-          backendOnline={backendOnline}
-          agentMode={agentMode}
-          isOpenMobile={mobileSidebarOpen}
-          onToggleMobile={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-        />
+      <div className="relative min-h-screen bg-black">
+        {/* Fixed faint background matching landing page: dark background + faint burgundy glow behind content */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 bg-black bg-tech-grid overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-dashboard-burgundy pointer-events-none" />
+        </div>
 
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col md:pl-64 min-w-0">
-          {/* Top Mobile Bar */}
-          <header className="flex h-14 items-center justify-between border-b border-borderSubtle bg-panel/80 px-4 backdrop-blur md:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileSidebarOpen(true)}
-              className="p-1.5 text-slate-400 hover:text-white focus:outline-none"
-              aria-label="Open sidebar menu"
-            >
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+        {/* Dashboard Foreground Content */}
+        <div className="relative z-10 flex min-h-screen">
+          {/* Left Sidebar */}
+          <Sidebar
+            activeTab={activeTab}
+            onSelectTab={setActiveTab}
+            onNewChat={handleNewChat}
+            historyCount={sessionRuns.length}
+            backendStatus={backendStatus}
+            agentMode={agentMode}
+            isOpenMobile={mobileSidebarOpen}
+            onToggleMobile={() => setMobileSidebarOpen(!mobileSidebarOpen)}
+            logoRef={sidebarLogoRef}
+          />
 
-            <div className="relative h-6 w-24">
-              <Image
-                src="/images/wordmark-transparent.png"
-                alt="VerdictAI"
-                fill
-                sizes="96px"
-                className="object-contain"
-              />
-            </div>
+          {/* Main Content Area */}
+          <div className="flex flex-1 flex-col md:pl-64 min-w-0">
+            {/* Top Mobile Bar */}
+            <header className="flex h-14 items-center justify-between border-b border-white/10 bg-black/80 px-4 backdrop-blur md:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="p-1.5 text-slate-400 transition-colors duration-200 hover:text-white active:text-slate-500 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                aria-label="Open sidebar menu"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
 
-            <button
-              type="button"
-              onClick={handleNewChat}
-              className="rounded border border-borderSubtle bg-panelElevated px-2 py-1 text-xs font-medium text-slate-300"
-            >
-              New
-            </button>
-          </header>
+              <div className="relative h-6 w-24">
+                <Image
+                  src="/images/wordmark-transparent.png"
+                  alt="VerdictAI"
+                  fill
+                  sizes="96px"
+                  className="object-contain"
+                />
+              </div>
 
-          {/* Central Main View */}
-          <main className="mx-auto w-full max-w-5xl flex-1 p-4 md:p-8">
-            {/* VIEW 1: AGENTS TAB */}
-            {activeTab === "agents" && (
-              <AgentsView onBackToDebugger={() => setActiveTab("dashboard")} />
-            )}
+              <button
+                type="button"
+                onClick={handleNewChat}
+                className="btn-secondary btn-shine px-3 h-[32px] text-xs font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              >
+                New
+              </button>
+            </header>
 
-            {/* VIEW 2: HISTORY TAB */}
-            {activeTab === "history" && (
-              <HistoryView
-                runs={sessionRuns}
-                onSelectRun={handleSelectRun}
-                onBackToDebugger={() => setActiveTab("dashboard")}
-              />
-            )}
+            {/* Central Main View */}
+            <main className="mx-auto w-full max-w-5xl flex-1 p-4 md:p-8">
+              {/* VIEW 1: AGENTS TAB */}
+              {activeTab === "agents" && (
+                <AgentsView onBackToDebugger={() => setActiveTab("dashboard")} />
+              )}
 
-            {/* VIEW 3: DASHBOARD TAB */}
-            {activeTab === "dashboard" && (
-              <>
-                {currentRun ? (
-                  /* 3. Debugging Conversation Group-Chat View */
-                  <ConversationView
-                    request={currentRun.request}
-                    response={currentRun.response}
-                    onEditAndRerun={() => setCurrentRun(null)}
-                  />
-                ) : (
-                  /* 2. Code Submission Area */
-                  <div className="space-y-6">
-                    {/* VerdictAI Wordmark Above Submission Area */}
-                    <div className="flex flex-col items-center justify-center text-center space-y-3 pt-2 pb-4">
-                      <div className="relative h-14 w-56 md:h-16 md:w-64">
-                        <Image
-                          src="/images/wordmark-transparent.png"
-                          alt="VerdictAI"
-                          fill
-                          sizes="256px"
-                          priority
-                          className="object-contain"
+              {/* VIEW 2: HISTORY TAB */}
+              {activeTab === "history" && (
+                <HistoryView
+                  runs={sessionRuns}
+                  onSelectRun={handleSelectRun}
+                  onBackToDebugger={() => setActiveTab("dashboard")}
+                />
+              )}
+
+              {/* VIEW 3: DASHBOARD TAB */}
+              {activeTab === "dashboard" && (
+                <>
+                  {currentRun ? (
+                    /* 3. Debugging Conversation Group-Chat View */
+                    <ConversationView
+                      request={currentRun.request}
+                      response={currentRun.response}
+                      onEditAndRerun={() => setCurrentRun(null)}
+                    />
+                  ) : (
+                    /* 2. Code Submission Area */
+                    <div className="space-y-6">
+                      {/* VerdictAI Wordmark Above Submission Area */}
+                      <div className="appear appear-soft stagger-1 flex flex-col items-center justify-center text-center space-y-3 pt-2 pb-4">
+                        <div className="relative h-14 w-56 md:h-16 md:w-64">
+                          <Image
+                            src="/images/wordmark-transparent.png"
+                            alt="VerdictAI"
+                            fill
+                            sizes="256px"
+                            priority
+                            className="object-contain"
+                          />
+                        </div>
+                        <p className="max-w-lg text-xs md:text-sm text-slate-400 leading-relaxed">
+                          Swarm debugger for Python. Submit your code and tests to let the Prosecutor, Defender, and Judge collaborate and compete.
+                        </p>
+                      </div>
+
+                      {/* Dual Code and Tests Editors */}
+                      <div className="grid gap-4 lg:grid-cols-2">
+                        <CodeInput
+                          value={code}
+                          onChange={setCode}
+                          onLoadSample={() => setCode(SAMPLE_CODE)}
+                          disabled={loading}
+                        />
+                        <TestCaseInput
+                          value={testsText}
+                          onChange={setTestsText}
+                          onLoadSample={() => setTestsText(SAMPLE_TESTS)}
+                          disabled={loading}
                         />
                       </div>
-                      <p className="max-w-lg text-xs md:text-sm text-slate-400 leading-relaxed">
-                        Swarm debugger for Python. Submit your code and tests to let the Prosecutor, Defender, and Judge collaborate and compete.
-                      </p>
-                    </div>
 
-                    {/* Dual Code and Tests Editors */}
-                    <div className="grid gap-4 lg:grid-cols-2">
-                      <CodeInput
-                        value={code}
-                        onChange={setCode}
-                        onLoadSample={() => setCode(SAMPLE_CODE)}
-                        disabled={loading}
-                      />
-                      <TestCaseInput
-                        value={testsText}
-                        onChange={setTestsText}
-                        onLoadSample={() => setTestsText(SAMPLE_TESTS)}
-                        disabled={loading}
-                      />
-                    </div>
-
-                    {/* Run Action Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                      <div className="text-xs text-slate-500 font-mono">
-                        Press Run Debugger to start the 3-agent swarm analysis
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleRun}
-                        disabled={loading}
-                        className="flex items-center space-x-2 rounded-xl bg-sky-500 px-6 py-2.5 text-sm font-semibold text-slate-950 hover:bg-sky-400 active:scale-[0.98] disabled:opacity-50 transition-all shadow-lg shadow-sky-500/20 focus-visible:ring-2 focus-visible:ring-sky-300"
-                      >
-                        {loading ? (
-                          <>
-                            <svg
-                              className="h-4 w-4 animate-spin text-slate-950"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v8H4z"
-                              />
-                            </svg>
-                            <span>Agents Deliberating…</span>
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span>Run Debugger</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Error Banner */}
-                    {error && (
-                      <div
-                        role="alert"
-                        className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 text-xs md:text-sm text-rose-300 whitespace-pre-line leading-relaxed flex items-start space-x-3"
-                      >
-                        <svg
-                          className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <div className="flex-1">
-                          <div className="font-semibold text-rose-200 mb-0.5">Submission Error</div>
-                          <div>{error}</div>
+                      {/* Run Action Bar */}
+                      <div className="appear appear-soft stagger-6 flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <div className="text-xs text-slate-400 font-mono">
+                          Press Run Debugger to start the 3-agent swarm analysis
                         </div>
+
+                        <button
+                          type="button"
+                          onClick={handleRun}
+                          disabled={loading}
+                          className="btn-primary btn-shine flex items-center justify-center space-x-2 px-6 h-[42px] text-sm font-semibold disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                        >
+                          {loading ? (
+                            <>
+                              <svg
+                                className="h-4 w-4 animate-spin text-slate-950"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8H4z"
+                                />
+                              </svg>
+                              <span>Agents Deliberating…</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span>Run Debugger</span>
+                            </>
+                          )}
+                        </button>
                       </div>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </main>
+
+                      {/* Error Banner */}
+                      {error && (
+                        <div
+                          role="alert"
+                          className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-4 text-xs md:text-sm text-rose-300 whitespace-pre-line leading-relaxed flex items-start space-x-3"
+                        >
+                          <svg
+                            className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <div className="flex-1">
+                            <div className="font-semibold text-rose-200 mb-0.5">Submission Error</div>
+                            <div>{error}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </main>
+          </div>
         </div>
       </div>
     </>

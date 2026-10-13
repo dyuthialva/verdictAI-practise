@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import PixelReveal from "./PixelReveal";
 
 interface Props {
   onBackToDebugger: () => void;
@@ -13,8 +13,9 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Bug Investigator",
       badge: "Agent 1",
       icon: "/images/prosecutor-transparent.png",
-      colorBorder: "border-orange-500/30 hover:border-orange-500/60",
-      colorBg: "bg-orange-950/10",
+      colorBorder: "border-orange-500/30 hover:border-orange-500/70 focus:border-orange-500/70",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(234,88,12,0.25)] focus:shadow-[0_12px_32px_rgba(234,88,12,0.25)]",
+      colorBg: "bg-orange-950/20",
       colorAccent: "text-orange-400",
       colorPill: "bg-orange-500/10 text-orange-400 border-orange-500/20",
       summary: "Identifies the likely bug and proposes a fix.",
@@ -27,8 +28,9 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Counter-Analyst",
       badge: "Agent 2",
       icon: "/images/defender-transparent.png",
-      colorBorder: "border-sky-500/30 hover:border-sky-500/60",
-      colorBg: "bg-sky-950/10",
+      colorBorder: "border-sky-500/30 hover:border-sky-500/70 focus:border-sky-500/70",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(2,132,199,0.25)] focus:shadow-[0_12px_32px_rgba(2,132,199,0.25)]",
+      colorBg: "bg-sky-950/20",
       colorAccent: "text-sky-400",
       colorPill: "bg-sky-500/10 text-sky-400 border-sky-500/20",
       summary: "Challenges the first diagnosis and proposes an alternative.",
@@ -41,8 +43,9 @@ export default function AgentsView({ onBackToDebugger }: Props) {
       role: "Impartial Arbiter",
       badge: "Agent 3",
       icon: "/images/judge-transparent.png",
-      colorBorder: "border-emerald-500/30 hover:border-emerald-500/60",
-      colorBg: "bg-emerald-950/10",
+      colorBorder: "border-emerald-500/30 hover:border-emerald-500/70 focus:border-emerald-500/70",
+      colorShadow: "hover:shadow-[0_12px_32px_rgba(16,185,129,0.25)] focus:shadow-[0_12px_32px_rgba(16,185,129,0.25)]",
+      colorBg: "bg-emerald-950/20",
       colorAccent: "text-emerald-400",
       colorPill: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
       summary: "Runs the original and candidate programs against the same tests, then bases the verdict on observed results.",
@@ -55,7 +58,7 @@ export default function AgentsView({ onBackToDebugger }: Props) {
   return (
     <div className="space-y-8 pb-12">
       {/* Page Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-borderSubtle pb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-slate-100">
             Swarm Debugger Agents
@@ -68,31 +71,36 @@ export default function AgentsView({ onBackToDebugger }: Props) {
         <button
           type="button"
           onClick={onBackToDebugger}
-          className="flex items-center space-x-2 rounded-lg border border-borderSubtle bg-panel px-4 py-2 text-sm font-medium text-slate-200 hover:bg-panelHover hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="btn-secondary btn-shine flex items-center space-x-2 px-4 h-[40px] text-sm font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
         >
           <span>← Back to Debugger</span>
         </button>
       </div>
 
       {/* 3 Horizontally Aligned Cards on Desktop, Stacking on Narrow Screens */}
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* Container has padding so scale(1.02) and soft shadows do not clip or shift neighbors */}
+      <div className="grid gap-6 md:grid-cols-3 p-2">
         {agents.map((agent) => (
           <div
             key={agent.name}
-            className={`flex flex-col justify-between rounded-xl border bg-panel p-6 shadow-sm transition-all duration-300 ${agent.colorBorder}`}
+            tabIndex={0}
+            role="region"
+            aria-label={`${agent.name} Agent Card`}
+            className={`flex flex-col justify-between rounded-xl border bg-black/80 p-6 shadow-sm transform transition-transform duration-200 ease-out will-change-transform hover:scale-[1.02] focus:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${agent.colorBorder} ${agent.colorShadow}`}
           >
             <div className="space-y-5">
               {/* Agent Icon & Header */}
               <div className="flex items-start justify-between">
                 <div
-                  className={`relative h-16 w-16 rounded-xl p-2 border border-borderSubtle ${agent.colorBg} flex items-center justify-center`}
+                  className={`relative h-16 w-16 rounded-xl p-2 border border-white/10 ${agent.colorBg} flex items-center justify-center`}
                 >
-                  <Image
+                  <PixelReveal
                     src={agent.icon}
                     alt={`${agent.name} Icon`}
-                    fill
-                    sizes="64px"
-                    className="object-contain p-1"
+                    width={56}
+                    height={56}
+                    duration={900}
+                    className="object-contain p-0.5"
                   />
                 </div>
                 <span
@@ -111,7 +119,7 @@ export default function AgentsView({ onBackToDebugger }: Props) {
               </div>
 
               {/* Concise Beginner-Friendly Summary */}
-              <div className="rounded-lg border border-borderSubtle/60 bg-background/60 p-3">
+              <div className="rounded-lg border border-white/10 bg-black/60 p-3">
                 <p className="text-xs font-semibold text-slate-200 leading-snug">
                   {agent.summary}
                 </p>
@@ -138,11 +146,11 @@ export default function AgentsView({ onBackToDebugger }: Props) {
               </div>
             </div>
 
-            <div className="pt-6 border-t border-borderSubtle/60 mt-6">
+            <div className="pt-6 border-t border-white/10 mt-6">
               <button
                 type="button"
                 onClick={onBackToDebugger}
-                className="w-full rounded-lg border border-borderSubtle bg-panelElevated py-2 text-xs font-medium text-slate-300 hover:bg-panelHover hover:text-white transition-colors"
+                className="btn-secondary btn-shine w-full h-[38px] flex items-center justify-center text-xs font-medium text-slate-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
               >
                 Test with {agent.name} →
               </button>

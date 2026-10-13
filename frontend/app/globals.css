@@ -2,19 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg-primary: #08090d;
-  --bg-secondary: #0f1218;
-  --border-subtle: #1c2230;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-}
-
+/* B2: Force pure black immediately so the page never flashes white */
+html,
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: #000000 !important;
+  color: #ffffff !important;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* Custom technical scrollbar */
@@ -24,7 +19,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #08090d;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -36,10 +31,10 @@ body {
   background: #2f3b55;
 }
 
-/* High-contrast focus state for accessibility */
+/* Part D: High-contrast visible focus ring everywhere */
 *:focus-visible {
-  outline: 2px solid #38bdf8;
-  outline-offset: 2px;
+  outline: 2px solid #38bdf8 !important;
+  outline-offset: 2px !important;
 }
 
 /* Code block line numbers and styling */
@@ -47,9 +42,279 @@ pre, code {
   font-family: ui-monospace, "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* B1: Faint film-grain overlay (inline SVG noise, opacity ~0.04, pointer-events: none, fixed) */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.04;
+  z-index: 1; /* above background (z: 0) but below content (z: 10) */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Tech grid texture */
 .bg-tech-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Landing page burgundy glow */
+.bg-landing-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% 25%, rgba(136, 19, 55, 0.32), rgba(80, 7, 36, 0.15) 45%, transparent 75%);
+}
+
+/* Dashboard faint burgundy glow (very faint, fixed behind content) */
+.bg-dashboard-burgundy {
+  background: radial-gradient(ellipse 80% 60% at 50% 15%, rgba(136, 19, 55, 0.14), rgba(80, 7, 36, 0.05) 45%, transparent 75%);
+}
+
+/* B3: Button shine diagonal sweep on hover (translateX -130% to 130%, ~0.6s) */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg) translateX(-140%);
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-shine:hover::after {
+  transform: skewX(-20deg) translateX(240%);
+}
+
+/* B3: Primary Button (white-to-light-gray vertical gradient, dark text, 1px light border, inset top highlight) */
+.btn-primary {
+  height: 42px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #ffffff 0%, #e4e4e7 100%);
+  color: #09090b;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 0 16px rgba(186, 230, 253, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  filter: brightness(1.03);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: linear-gradient(180deg, #d4d4d8 0%, #a1a1aa 100%);
+  transform: scale(0.98);
+}
+
+/* B3: Secondary / Ghost Button (dark translucent gradient, 1px light-gray border at ~45% opacity) */
+.btn-secondary {
+  height: 40px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  color: #e2e8f0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+}
+
+.btn-secondary:active:not(:disabled) {
+  background: rgba(0, 0, 0, 0.6);
+  transform: scale(0.98);
+}
+
+/* B4: Sidebar items (dark liquid metal: dark gradient, light border) */
+.sidebar-item {
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-item:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #f1f5f9;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.025) 100%);
+}
+
+.sidebar-item-active {
+  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.14) 0%, rgba(56, 189, 248, 0.03) 100%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.65) !important;
+  color: #bae6fd !important;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.16), inset 0 1px 0 rgba(56, 189, 248, 0.25);
+}
+
+/* B5: Box focus glow and brighter border */
+.box-glow {
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.box-glow:focus-within {
+  border-color: rgba(56, 189, 248, 0.75) !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.22), inset 0 0 14px rgba(56, 189, 248, 0.04) !important;
+}
+
+/* =========================================================================
+   C1: ENTRANCE ANIMATIONS (.appear)
+   Resting opacity 1 so nothing stays hidden if animations fail.
+   ========================================================================= */
+@keyframes in-scale {
+  0% {
+    opacity: 0;
+    transform: scale(0.84);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes in-soft {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes in-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes in-btn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.appear {
+  opacity: 1;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.appear-scale {
+  animation-name: in-scale;
+}
+
+.appear-soft {
+  animation-name: in-soft;
+}
+
+.appear-pop {
+  animation-name: in-pop;
+}
+
+.appear-btn {
+  animation-name: in-btn;
+}
+
+/* Stagger delays */
+.delay-0 {
+  animation-delay: 0s;
+}
+.delay-1 {
+  animation-delay: 0.08s;
+}
+.delay-2 {
+  animation-delay: 0.15s;
+}
+.delay-3 {
+  animation-delay: 0.24s;
+}
+.delay-4 {
+  animation-delay: 0.32s;
+}
+.delay-5 {
+  animation-delay: 0.40s;
+}
+.delay-6 {
+  animation-delay: 0.48s;
+}
+.delay-7 {
+  animation-delay: 0.56s;
+}
+.delay-8 {
+  animation-delay: 0.64s;
+}
+
+/* Once animation completes or JS fallback fires, freeze in place */
+.appear.is-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* =========================================================================
+   C5: REDUCED MOTION ACCESSIBILITY RULE
+   Turns off transition and animation for everything, forces .appear to rest
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .appear {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

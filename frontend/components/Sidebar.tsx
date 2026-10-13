@@ -3,16 +3,18 @@
 import Image from "next/image";
 
 export type NavTab = "dashboard" | "agents" | "history";
+export type BackendStatus = "checking" | "online" | "offline";
 
 interface Props {
   activeTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
   onNewChat: () => void;
   historyCount: number;
-  backendOnline: boolean;
+  backendStatus: BackendStatus;
   agentMode: string;
   isOpenMobile: boolean;
   onToggleMobile: () => void;
+  logoRef?: React.Ref<HTMLDivElement>;
 }
 
 export default function Sidebar({
@@ -20,10 +22,11 @@ export default function Sidebar({
   onSelectTab,
   onNewChat,
   historyCount,
-  backendOnline,
+  backendStatus,
   agentMode,
   isOpenMobile,
   onToggleMobile,
+  logoRef,
 }: Props) {
   return (
     <>
@@ -43,7 +46,7 @@ export default function Sidebar({
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-64 border-r border-borderSubtle bg-panel flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 w-64 border-r border-white/10 bg-black flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isOpenMobile ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -56,10 +59,11 @@ export default function Sidebar({
             onKeyDown={(e) => {
               if (e.key === "Enter") onSelectTab("dashboard");
             }}
-            className="flex items-center space-x-3 cursor-pointer py-1 px-2 rounded-lg hover:bg-panelHover transition-colors focus-visible:ring-1 focus-visible:ring-sky-500"
+            className="flex items-center space-x-3 cursor-pointer py-1 px-2 rounded-lg hover:bg-white/5 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
             title="VerdictAI Home"
           >
-            <div className="relative w-9 h-9 flex-shrink-0">
+            {/* Target logo icon anchor for transition glide */}
+            <div ref={logoRef} className="relative w-9 h-9 flex-shrink-0">
               <Image
                 src="/images/logo-transparent.png"
                 alt="VerdictAI Icon"
@@ -79,11 +83,11 @@ export default function Sidebar({
             </div>
           </div>
 
-          {/* New Chat Primary Button */}
+          {/* New Chat Button (Ghost/Secondary with diagonal shine sweep) */}
           <button
             type="button"
             onClick={onNewChat}
-            className="flex items-center justify-center space-x-2 w-full py-2.5 px-3 rounded-lg border border-borderSubtle bg-panelElevated hover:border-sky-500/50 hover:bg-panelHover text-sm font-medium text-slate-200 transition-all shadow-sm active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-sky-500"
+            className="btn-secondary btn-shine flex items-center justify-center space-x-2 w-full text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
             <svg
               className="w-4 h-4 text-sky-400"
@@ -96,21 +100,25 @@ export default function Sidebar({
             <span>New chat</span>
           </button>
 
-          {/* Navigation Items */}
-          <nav className="flex flex-col space-y-1.5" aria-label="Main Navigation">
+          {/* Navigation Items with liquid metal style and clear active highlight */}
+          <nav className="flex flex-col space-y-2" aria-label="Main Navigation">
+            {/* Dashboard Nav Item */}
             <button
               type="button"
               onClick={() => {
                 onSelectTab("dashboard");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`flex items-center space-x-3 w-full py-2.5 px-3 rounded-lg text-sm font-medium transition-colors text-left ${
-                activeTab === "dashboard"
-                  ? "bg-slate-800 text-sky-300 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-panelHover"
+              className={`appear appear-soft stagger-1 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+                activeTab === "dashboard" ? "sidebar-item-active" : ""
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className={`w-4 h-4 ${activeTab === "dashboard" ? "text-sky-300" : "text-slate-400"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -121,19 +129,23 @@ export default function Sidebar({
               <span>Dashboard</span>
             </button>
 
+            {/* Agents Nav Item */}
             <button
               type="button"
               onClick={() => {
                 onSelectTab("agents");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`flex items-center space-x-3 w-full py-2.5 px-3 rounded-lg text-sm font-medium transition-colors text-left ${
-                activeTab === "agents"
-                  ? "bg-slate-800 text-sky-300 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-panelHover"
+              className={`appear appear-soft stagger-2 sidebar-item flex items-center space-x-3 w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+                activeTab === "agents" ? "sidebar-item-active" : ""
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className={`w-4 h-4 ${activeTab === "agents" ? "text-sky-300" : "text-slate-400"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -144,20 +156,24 @@ export default function Sidebar({
               <span>Agents</span>
             </button>
 
+            {/* History Nav Item */}
             <button
               type="button"
               onClick={() => {
                 onSelectTab("history");
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`flex items-center justify-between w-full py-2.5 px-3 rounded-lg text-sm font-medium transition-colors text-left ${
-                activeTab === "history"
-                  ? "bg-slate-800 text-sky-300 font-semibold"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-panelHover"
+              className={`appear appear-soft stagger-3 sidebar-item flex items-center justify-between w-full py-2.5 px-3 text-sm font-medium text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 ${
+                activeTab === "history" ? "sidebar-item-active" : ""
               }`}
             >
               <div className="flex items-center space-x-3">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className={`w-4 h-4 ${activeTab === "history" ? "text-sky-300" : "text-slate-400"}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -168,7 +184,7 @@ export default function Sidebar({
                 <span>History</span>
               </div>
               {historyCount > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono">
                   {historyCount}
                 </span>
               )}
@@ -176,25 +192,49 @@ export default function Sidebar({
           </nav>
         </div>
 
-        {/* Backend System Status */}
-        <div className="p-4 border-t border-borderSubtle bg-background/50 text-xs space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 font-medium">FastAPI Backend</span>
-            <div className="flex items-center space-x-1.5">
+        {/* Backend System Status Card (A2 Rebuilt) */}
+        <div className="appear appear-soft stagger-4 mx-3 mb-4 p-3.5 rounded-lg border border-white/10 bg-black/80 shadow-sm text-xs space-y-2">
+          {/* Row 1: Backend */}
+          <div className="flex items-center justify-between min-w-0 gap-2">
+            <span className="text-slate-400 font-medium truncate flex-shrink-0">Backend</span>
+            <div className="flex items-center space-x-2 min-w-0 flex-shrink-0">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  backendOnline ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                  backendStatus === "online"
+                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
+                    : backendStatus === "checking"
+                    ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)] animate-pulse"
+                    : "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"
                 }`}
               />
-              <span className={backendOnline ? "text-emerald-400 font-mono" : "text-rose-400 font-mono"}>
-                {backendOnline ? "Online" : "Offline"}
+              <span
+                className={`font-mono text-xs truncate ${
+                  backendStatus === "online"
+                    ? "text-emerald-300 font-semibold"
+                    : backendStatus === "checking"
+                    ? "text-amber-300"
+                    : "text-rose-400 font-semibold"
+                }`}
+              >
+                {backendStatus === "online" ? "Online" : backendStatus === "checking" ? "Checking..." : "Offline"}
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
-            <span>Agent Mode</span>
-            <span className="text-slate-400 capitalize">{agentMode || "mock"}</span>
+
+          {/* Row 2: Agent mode */}
+          <div className="flex items-center justify-between min-w-0 gap-2">
+            <span className="text-slate-400 font-medium truncate flex-shrink-0">Agent mode</span>
+            <span className="text-slate-200 font-mono capitalize truncate min-w-0 text-right">
+              {backendStatus === "offline" ? "Unknown" : agentMode || "mock"}
+            </span>
           </div>
+
+          {/* Offline hint */}
+          {backendStatus === "offline" && (
+            <p className="pt-2 border-t border-white/10 text-[11px] text-slate-400/90 leading-tight">
+              Start the backend on port 8000.
+            </p>
+          )}
         </div>
       </aside>
     </>

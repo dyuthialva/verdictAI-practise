@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import PixelReveal from "./PixelReveal";
 import type { DebugRequest, DebugResponse } from "@/lib/types";
 
 interface Props {
@@ -26,7 +26,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borderSubtle pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-slate-100">
             Debugging Conversation
@@ -50,7 +50,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
           <button
             type="button"
             onClick={onEditAndRerun}
-            className="rounded-lg border border-borderSubtle bg-panel px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-panelHover hover:text-white transition-colors focus-visible:ring-1 focus-visible:ring-sky-500"
+            className="btn-secondary btn-shine px-3.5 h-[36px] flex items-center justify-center text-xs font-medium text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
             Edit & Re-run
           </button>
@@ -70,10 +70,10 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
       )}
 
       {/* 1. User's Submitted Code & Tests Card */}
-      <div className="rounded-xl border border-borderSubtle bg-panel overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between border-b border-borderSubtle/70 bg-panelElevated/50 px-4 py-3">
+      <div className="rounded-xl border border-white/10 bg-black/80 overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3">
           <div className="flex items-center space-x-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-mono font-semibold text-sky-400">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-xs font-mono font-semibold text-sky-400">
               U
             </div>
             <div>
@@ -85,7 +85,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
           <button
             type="button"
             onClick={() => setShowFullSubmission(!showFullSubmission)}
-            className="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+            className="text-xs text-slate-400 transition-all duration-200 hover:text-white active:text-slate-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
           >
             {showFullSubmission ? "Collapse ↑" : "Expand Code & Tests ↓"}
           </button>
@@ -99,12 +99,12 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
                 <button
                   type="button"
                   onClick={() => copyCode(request.original_code, "orig")}
-                  className="hover:text-slate-200"
+                  className="rounded px-2 py-0.5 text-xs text-slate-400 transition-all duration-200 hover:bg-white/10 hover:text-white active:bg-white/5 disabled:opacity-50 focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
                 >
-                  {copiedSection === "orig" ? "Copied!" : "Copy"}
+                  {copiedSection === "orig" ? "Copied!" : "Copy code"}
                 </button>
               </div>
-              <pre className="max-h-60 overflow-auto rounded-lg border border-borderSubtle bg-background p-3 text-xs font-mono text-slate-300">
+              <pre className="max-h-60 overflow-auto rounded-lg border border-white/10 bg-black p-3 text-xs font-mono text-slate-300">
                 <code>{request.original_code}</code>
               </pre>
             </div>
@@ -113,13 +113,13 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
               <div className="mb-1.5 text-xs text-slate-400">
                 <span>Test Cases ({response.test_case_count})</span>
               </div>
-              <pre className="max-h-60 overflow-auto rounded-lg border border-borderSubtle bg-background p-3 text-xs font-mono text-slate-300">
+              <pre className="max-h-60 overflow-auto rounded-lg border border-white/10 bg-black p-3 text-xs font-mono text-slate-300">
                 <code>{JSON.stringify(request.test_cases, null, 2)}</code>
               </pre>
             </div>
           </div>
         ) : (
-          <div className="p-3 text-xs text-slate-400 flex items-center justify-between bg-panel/30">
+          <div className="p-3 text-xs text-slate-400 flex items-center justify-between bg-black/40">
             <span className="font-mono text-slate-300 truncate max-w-md">
               {request.original_code.split("\n")[0] || "def solve(input_data): ..."}
             </span>
@@ -143,16 +143,17 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 2. PROSECUTOR AGENT CARD */}
       {prosecutor && (
-        <div className="rounded-xl border border-orange-500/30 bg-panel overflow-hidden shadow-sm transition-all hover:border-orange-500/50">
+        <div className="rounded-xl border border-orange-500/30 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-orange-500/60 hover:shadow-[0_8px_24px_rgba(234,88,12,0.15)]">
           <div className="flex items-center justify-between border-b border-orange-500/20 bg-orange-950/20 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-orange-900/40 p-1 border border-orange-500/30">
-                <Image
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-orange-900/40 p-1 border border-orange-500/30 flex items-center justify-center">
+                <PixelReveal
                   src="/images/prosecutor-transparent.png"
                   alt="Prosecutor Icon"
-                  fill
-                  sizes="36px"
-                  className="object-contain p-0.5"
+                  width={30}
+                  height={30}
+                  duration={900}
+                  className="object-contain"
                 />
               </div>
               <div>
@@ -194,7 +195,7 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
                 <button
                   type="button"
                   onClick={() => copyCode(prosecutor.proposed_code, "pros")}
-                  className="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+                  className="rounded border border-borderSubtle bg-panelElevated px-2 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-slate-700 hover:text-white active:bg-slate-900 active:scale-[0.98] focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
                 >
                   {copiedSection === "pros" ? "Copied!" : "Copy code"}
                 </button>
@@ -209,16 +210,17 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 3. DEFENDER AGENT CARD */}
       {defender && (
-        <div className="rounded-xl border border-sky-500/30 bg-panel overflow-hidden shadow-sm transition-all hover:border-sky-500/50">
+        <div className="rounded-xl border border-sky-500/30 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-sky-500/60 hover:shadow-[0_8px_24px_rgba(2,132,199,0.15)]">
           <div className="flex items-center justify-between border-b border-sky-500/20 bg-sky-950/20 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-sky-900/40 p-1 border border-sky-500/30">
-                <Image
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-sky-900/40 p-1 border border-sky-500/30 flex items-center justify-center">
+                <PixelReveal
                   src="/images/defender-transparent.png"
                   alt="Defender Icon"
-                  fill
-                  sizes="36px"
-                  className="object-contain p-0.5"
+                  width={30}
+                  height={30}
+                  duration={900}
+                  className="object-contain"
                 />
               </div>
               <div>
@@ -269,12 +271,12 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
                 <button
                   type="button"
                   onClick={() => copyCode(defender.proposed_code, "def")}
-                  className="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+                  className="rounded border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-slate-300 transition-all duration-200 hover:bg-white/10 hover:text-white active:bg-white/5 focus:outline-none focus-visible:ring-1 focus-visible:ring-sky-400"
                 >
                   {copiedSection === "def" ? "Copied!" : "Copy code"}
                 </button>
               </div>
-              <pre className="overflow-x-auto rounded-lg border border-borderSubtle bg-background p-3 text-xs md:text-sm font-mono text-sky-300">
+              <pre className="overflow-x-auto rounded-lg border border-white/10 bg-black p-3 text-xs md:text-sm font-mono text-sky-300">
                 <code>{defender.proposed_code}</code>
               </pre>
             </div>
@@ -284,16 +286,17 @@ export default function ConversationView({ request, response, onEditAndRerun }: 
 
       {/* 4. JUDGE AGENT CARD */}
       {judge && (
-        <div className="rounded-xl border border-emerald-500/40 bg-panel overflow-hidden shadow-sm transition-all hover:border-emerald-500/60">
+        <div className="rounded-xl border border-emerald-500/40 bg-black/80 overflow-hidden shadow-sm transition-all duration-200 hover:border-emerald-500/70 hover:shadow-[0_8px_24px_rgba(16,185,129,0.15)]">
           <div className="flex items-center justify-between border-b border-emerald-500/20 bg-emerald-950/20 px-4 py-3">
             <div className="flex items-center space-x-3">
-              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-emerald-900/40 p-1 border border-emerald-500/30">
-                <Image
+              <div className="relative h-9 w-9 flex-shrink-0 rounded-lg bg-emerald-900/40 p-1 border border-emerald-500/30 flex items-center justify-center">
+                <PixelReveal
                   src="/images/judge-transparent.png"
                   alt="Judge Icon"
-                  fill
-                  sizes="36px"
-                  className="object-contain p-0.5"
+                  width={30}
+                  height={30}
+                  duration={900}
+                  className="object-contain"
                 />
               </div>
               <div>
