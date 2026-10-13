@@ -10,12 +10,15 @@ from services.debug_service import run_debug
 
 app = FastAPI(title="Swarm Debugger API")
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.cors_origins(),
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 @app.exception_handler(RequestValidationError)
